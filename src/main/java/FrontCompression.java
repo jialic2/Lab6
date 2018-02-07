@@ -32,9 +32,6 @@ public class FrontCompression {
      * @return the input compressed using front encoding
      */
     public static String compress(final String corpus) {
-        /*
-         * Defend against bad inputs.
-         */
         if (corpus == null) {
             return null;
         } else if (corpus.length() == 0) {
@@ -44,8 +41,17 @@ public class FrontCompression {
         /*
          * Complete this function.
          */
-
-        return "";
+        String[] lines = corpus.split("\n");
+        String result = "0 " + lines[0];
+        for (int i = 1; i < lines.length; i++) {
+            int prefix = longestPrefix(lines[i - 1], lines[i]);
+            result += "\n" + prefix + " ";
+            for (int j = prefix; j < lines[i].length(); j++) {
+                result += lines[i].charAt(j);
+            }
+        }
+        System.out.println(result);
+        return result;
     }
 
     /**
@@ -67,8 +73,37 @@ public class FrontCompression {
         /*
          * Complete this function.
          */
-
-        return "";
+        String result = "";
+        final int ascii = 48;
+        String[] lines = corpus.split("\n");
+        for (int index = 2; index < lines[0].length(); index++) {
+            result += lines[0].charAt(index);
+        }
+        lines[0] = result;
+        for (int i = 1; i < lines.length; i++) {
+            result += "\n";
+            String temp = "";
+            int prefix;
+            final int decimal = 10;
+            if (lines[i].indexOf(" ") == 1) {
+                prefix = (int) lines[i].charAt(0) - ascii;
+            } else {
+                prefix = decimal * ((int) lines[i].charAt(0) - ascii)
+                        + (int) lines[i].charAt(1) - ascii;
+            }
+                if (lines[i].charAt(0) != '0') {
+                    for (int j = 0; j < prefix; j++) {
+                        temp += lines[i - 1].charAt(j);
+                    }
+                }
+            for (int k = lines[i].indexOf(" ") + 1; k < lines[i].length(); k++) {
+                temp += lines[i].charAt(k);
+            }
+            lines[i] = temp;
+            result += lines[i];
+        }
+        result += "\n";
+        return result;
     }
 
     /**
@@ -82,7 +117,13 @@ public class FrontCompression {
         /*
          * Complete this function.
          */
-        return 0;
+        int length = 0;
+        for (; length < firstString.length() && length < secondString.length(); length++) {
+            if (firstString.charAt(length) != secondString.charAt(length)) {
+                break;
+            }
+        }
+        return length;
     }
 
     /**
